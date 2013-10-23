@@ -2,7 +2,7 @@
 import os, os.path, subprocess, time, threading, functools, json, urllib2, uuid, sys, itertools
 from functools import partial
 
-CONFIG_FILE = os.path.join(os.path.expanduser("~"),".dctail.json");
+CONFIG_FILE = "/usr/local/etc/debugchannel/dctail.json"
 
 class Tail(object):
 
@@ -134,6 +134,8 @@ class Config(object):
 		return self.getConfig()["files"][fileName]
 
 	def saveConfig(self):
+		if not os.path.exists(self.fileName):
+			os.mkdir(os.path.dirname(self.fileName))
 		with open(self.fileName, "w+t") as handle:
 			handle.write(json.dumps(self.getConfig(), sort_keys=True, indent=4, separators=(',', ': ')))
 			return self
