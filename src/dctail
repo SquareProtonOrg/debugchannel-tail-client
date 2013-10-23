@@ -2,7 +2,7 @@
 import os, os.path, subprocess, time, threading, functools, json, urllib2, uuid, sys, itertools
 from functools import partial
 
-CONFIG_FILE = os.path.join(os.path.expanduser("~"),".tail.json");
+CONFIG_FILE = os.path.join(os.path.expanduser("~"),".dctail.json");
 
 class Tail(object):
 
