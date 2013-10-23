@@ -167,13 +167,14 @@ class DebugChannelTail(ThreadTail):
 			config.getAddress() + "/" + config.getChannel(self.fileName),
 			json.dumps({
 				"handler": "tail", 
-				"args": [self.fileName, line],
+				"args": [line],
 				'info': {
 					'pid': os.getpid(),
 					'machineId': self.macAddress,
 					'generationTime': time.time(),
 					'sequenceNo': self.sequenceNumbers.next()
-				}
+				},
+				"trace": [ {'location': self.fileName, 'function': 'myfunc'} ]
 			})
 		)
 		map(lambda (x,y): req.add_header(x,y), headers.items())
