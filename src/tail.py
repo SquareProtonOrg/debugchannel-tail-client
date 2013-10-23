@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 import os, os.path, subprocess, time, threading, functools, json, urllib2, uuid, sys, itertools
 from functools import partial
 
@@ -25,7 +26,11 @@ class Tail(object):
 		if self.status != self.STATUS_INIT:
 			raise Exception("must be in %s state to call start method" % self.STATUS_INIT);
 		self.status = self.STATUS_RUNNING
-		self.waitForFileExist()			
+		if not (os.path.exists(self.fileName) and os.path.isfile(self.fileName)):
+			self.errorMessage = "file not found '%s'" % self.fileName
+			self.status = self.STATUS_ERROR
+			return
+		#self.waitForFileExist()			
 		self.tailProcess = subprocess.Popen(['tail','-F',self.fileName], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 		while self.isRunning():
 			try:
@@ -42,8 +47,7 @@ class Tail(object):
 						self.processLine(line)
 			except Exception as e:
 				self.status = self.STATUS_STOPPED
-				import traceback
-				traceback.print_exc(file=sys.stdout)
+				self.errorMessage = e.message
 		self.kill()
 		return self
 		
@@ -101,7 +105,8 @@ class Config(object):
 		if hasattr(self, "config"):
 			return self.config
 		self.config = self.loadConfigFromDefault()
-		if self.fileName and os.path.exists(self.fileName):
+		print self.fileName
+		if self.fileName and os.path.exists(self.fileName) and os.path.isfile(self.fileName):
 			try:
 				config = self.loadConfigFromFile()
 				assert "apiKey" in config
@@ -180,9 +185,20 @@ class DebugChannelTail(ThreadTail):
 
 configFileName = os.path.join(os.path.expanduser("~"),".tail.json")
 config = Config(configFileName)
+
+if not os.path.exists(configFileName):
+	print "no config detected, creating config at '%s'" % configFileName
+	config.saveConfig()
+	exit(0)
+
 tails = map(lambda f: DebugChannelTail(config, f).start(), config.getFiles())
 try:
-	map(lambda t: t.join(), tails)
+	def handle(t):
+		t.join()
+		if hasattr(t, "errorMessage"):
+			print t.errorMessage
+	map(handle, tails)
+
 except KeyboardInterrupt:
 	map(lambda t: t.stopThread(), tails)
 exit(0)
