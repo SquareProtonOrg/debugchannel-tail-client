@@ -102,8 +102,6 @@ class Config(object):
 	def getConfig(self):
 		if hasattr(self, "config"):
 			return self.config
-		self.config = self.loadConfigFromDefault()
-		print self.fileName
 		if self.fileName and os.path.exists(self.fileName) and os.path.isfile(self.fileName):
 			try:
 				config = self.loadConfigFromFile()
@@ -113,9 +111,15 @@ class Config(object):
 				self.config = config
 			except Exception, e:
 				print >>sys.stderr, "unable to load from file '%s' because '%s'. using defaults" % (self.fileName, e)
-		self.saveConfig()
+		else:
+			raise Exception("cannot find configFile '%s'" % self.fileName)
 		self.config["files"] = { os.path.abspath(f): c for f,c in self.config["files"].items() }
 		return self.config
+
+	def addFile(self, fileName, channel):
+		config = self.getConfig()
+		config["files"][os.path.abspath(fileName)] = channel
+		return self
 
 	def getAddress(self):
 		return self.getConfig()["address"]
@@ -134,21 +138,20 @@ class Config(object):
 			handle.write(json.dumps(self.getConfig(), sort_keys=True, indent=4, separators=(',', ': ')))
 			return self
 	def loadConfigFromDefault(self):
-		return {
+		self.config = {
 			"apiKey": "someApiKey",
 			"address": "http://192.168.2.158:1025",
-			"files": {
-				"log1.txt": "hello",
-				"log2.txt": "hello"
-			}
+			"files": {} # associative dictionary from fileName to channel
 		}
+		return self.config
 
 	def loadConfigFromFile(self):
 		if not os.path.exists(configFileName):
 			exit(1)
 
 		with open(configFileName) as configHandler:
-			return json.loads(configHandler.read())
+			self.config = json.loads(configHandler.read())
+			return self.config
 
 class DebugChannelTail(ThreadTail):
 
@@ -183,10 +186,26 @@ class DebugChannelTail(ThreadTail):
 configFileName = CONFIG_FILE;
 config = Config(configFileName)
 
-if not os.path.exists(configFileName):
-	print "no config detected, creating config at '%s'" % configFileName
+argv = sys.argv
+del argv[0]
+
+if "--setup" in argv:
+	config.loadConfigFromDefault()
 	config.saveConfig()
 	exit(0)
+
+argv = filter(lambda s: not s.startswith("--"), argv)
+for arg in argv:
+	split = arg.split(":")
+	if len(split) == 2:
+		config.addFile(*split)
+	else: 
+		print "invalid argument syntax '%s'. arg must in the form fileName:channelName" & arg
+		exit(1)
+
+if len(config.getFiles()) > 0:
+	print "tailing files:"
+	print "\n".join([ "  - %s:%s" % (f, config.getChannel(f)) for f in config.getFiles()])
 
 tails = map(lambda f: DebugChannelTail(config, f).start(), config.getFiles())
 try:
