@@ -2,9 +2,7 @@
 import os, os.path, subprocess, time, threading, functools, json, urllib2, uuid, sys, itertools
 from functools import partial
 
-class FileNotFoundException(Exception): pass
-
-subprocesses = []
+CONFIG_FILE = os.path.join(os.path.expanduser("~"),".tail.json");
 
 class Tail(object):
 
@@ -133,9 +131,8 @@ class Config(object):
 
 	def saveConfig(self):
 		with open(self.fileName, "w+t") as handle:
-			handle.write(json.dumps(self.getConfig()))
-		return self
-
+			handle.write(json.dumps(self.getConfig(), sort_keys=True, indent=4, separators=(',', ': ')))
+			return self
 	def loadConfigFromDefault(self):
 		return {
 			"apiKey": "someApiKey",
@@ -183,7 +180,7 @@ class DebugChannelTail(ThreadTail):
 	def getMacAddress():
 		return ':'.join(['{:02x}'.format((uuid.getnode() >> i) & 0xff) for i in range(0,8*6,8)][::-1])
 
-configFileName = os.path.join(os.path.expanduser("~"),".tail.json")
+configFileName = CONFIG_FILE;
 config = Config(configFileName)
 
 if not os.path.exists(configFileName):
