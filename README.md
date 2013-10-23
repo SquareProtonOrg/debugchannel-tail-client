@@ -1,10 +1,12 @@
 debugchannel-tail-client
 ========================
 
-tails files and publishes the result to debugchannel.
-this project contains a file called dctail which when executed will tail a set of files specified in ~/.dctail.json and publish the chains to debug channels. each file can be published to a different channel.
+command line tool that can tail multiple files and publish the output to debug channels.
+usage:
+    dctail mylog.txt:logchannel serverlog.txt serverlogchannel
+this will tail 2 files: mylog.txt and serverlog.txt and publish the results to the channels logchannel and serverlogchannel respectively. 
 
-INSTALL
+install
 =======
 execute the install.sh script which will add the dctail to /usr/local/bin and generate config
 
