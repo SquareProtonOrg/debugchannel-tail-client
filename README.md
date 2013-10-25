@@ -3,9 +3,10 @@ debugchannel-tail-client
 
 A simple command line tool that can tail multiple files and publish the output to debugchannels.  This can be used for tailing mysql slow queries log, apache error logs or infact any log file which is related to your software development.
 
+
 Install
 =======
-Execute the install.sh script (as root) which will add dctail to /usr/local/bin/ and generate config file /etc/debugchannel/dctail.conf.
+Execute the install.sh script (as root) which will add dctail to /usr/local/bin/ and generates a configuration file /etc/debugchannel/dctail.conf.
 
 
 Configuration
@@ -14,7 +15,7 @@ The configuration file `/etc/debugchannel/dctail.conf` is generated during the i
 
 ```
 {
-    "address": "http://192.168.2.158:1025",
+    "address": "https://debugchannel.com",
     "apiKey": "someApiKey",
     "files": {"/var/log/mylog.txt": "nameofchannel"}
 }
@@ -51,4 +52,4 @@ If you have damaged your configuration file then you can run
     dctail --setup
 ```
 
-This creates the ~/.dctail.json config file from defaults and then exits
+This creates the /etc/debugchannel/dctail.conf config file from defaults and then exits.
