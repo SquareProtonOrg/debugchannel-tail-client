@@ -2,7 +2,11 @@
 import os, os.path, subprocess, time, threading, functools, json, urllib2, uuid, sys, itertools
 from functools import partial
 
-CONFIG_FILE = "/usr/local/etc/debugchannel/dctail.json"
+# Copyright DebugChannel 2013
+# www.debugchannel.com
+# support@debugchannel.com
+
+CONFIG_FILE = "/etc/debugchannel/dctail.conf"
 
 class Tail(object):
 
@@ -142,7 +146,7 @@ class Config(object):
 	def loadConfigFromDefault(self):
 		self.config = {
 			"apiKey": "someApiKey",
-			"address": "http://192.168.2.158:1025",
+			"address": "https://debugchannel.com",
 			"files": {} # associative dictionary from fileName to channel
 		}
 		return self.config
@@ -207,7 +211,8 @@ for arg in argv:
 		exit(1)
 
 if len(config.getFiles()) > 0:
-	print "tailing files:"
+	print "Channeling files to %s" % config.getAddress() 
+	print "\ Files: "
 	print "\n".join([ "  - %s:%s" % (f, config.getChannel(f)) for f in config.getFiles()])
 
 tails = map(lambda f: DebugChannelTail(config, f).start(), config.getFiles())

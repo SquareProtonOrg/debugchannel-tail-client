@@ -1,0 +1,7 @@
+{
+    "address": "http://debugchannel.com",
+    "apiKey": "someApiKey",
+    "files": {
+    			"/etc/debugchannel/dctail.conf.sample":"dctail"
+    		  }
+}
