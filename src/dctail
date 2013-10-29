@@ -116,7 +116,11 @@ class Config(object):
 			except Exception, e:
 				print >>sys.stderr, "unable to load from file '%s' because '%s'. using defaults" % (self.fileName, e)
 		else:
-			raise Exception("cannot find configFile '%s'" % self.fileName)
+			print "Cannot find config file /etc/debugchannel/dctail.conf or command line arguments"
+    		print "For usage visit: https://github.com/debugchannel/debugchannel-tail-client "
+    		print "Or email support@debugchannel.com"
+    		exit(1)
+
 		self.config["files"] = { os.path.abspath(f): c for f,c in self.config["files"].items() }
 		return self.config
 
@@ -215,7 +219,9 @@ if len(config.getFiles()) > 0:
 	print "\ Files: "
 	print "\n".join([ "  - %s:%s" % (f, config.getChannel(f)) for f in config.getFiles()])
 else:
-    print "No files specified in config files /etc/debugchannel/dctail.conf"
+    print "No files specified in config files /etc/debugchannel/dctail.conf or command line arguments"
+    print "For usage visit: https://github.com/debugchannel/debugchannel-tail-client "
+    print "Or email support@debugchannel.com"
 
 tails = map(lambda f: DebugChannelTail(config, f).start(), config.getFiles())
 

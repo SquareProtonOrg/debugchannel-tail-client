@@ -6,7 +6,7 @@ A simple command line tool that can tail multiple files and publish the output t
 
 Install
 =======
-Execute the install.sh script (as root) which will add dctail to /usr/local/bin/ and generate a configuration file /etc/debugchannel/dctail.conf.
+Execute the install.sh script (as root) which will add dctail to /usr/local/bin/ and generates a configuration file /etc/debugchannel/dctail.conf.
 
 ```
 sudo ./install.sh
