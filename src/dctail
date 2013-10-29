@@ -211,11 +211,14 @@ for arg in argv:
 		exit(1)
 
 if len(config.getFiles()) > 0:
-	print "Channeling files to %s" % config.getAddress() 
+	print "Tailing files to DebugChannel server - %s" % config.getAddress() 
 	print "\ Files: "
 	print "\n".join([ "  - %s:%s" % (f, config.getChannel(f)) for f in config.getFiles()])
+else:
+    print "No files specified in config files /etc/debugchannel/dctail.conf"
 
 tails = map(lambda f: DebugChannelTail(config, f).start(), config.getFiles())
+
 try:
 	def handle(t):
 		t.join()
