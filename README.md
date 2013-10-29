@@ -6,7 +6,24 @@ A simple command line tool that can tail multiple files and publish the output t
 
 Install
 =======
-Execute the install.sh script (as root) which will add dctail to /usr/local/bin/ and generates a configuration file /etc/debugchannel/dctail.conf.
+Execute the install.sh script (as root) which will add dctail to /usr/local/bin/ and generate a configuration file /etc/debugchannel/dctail.conf.
+
+```
+sudo ./install.sh
+```
+
+The script also installs a bash script in /etc/init.d/detail so that you can run dctail as a service by running:
+
+```
+service dctail start
+```
+
+
+You can configure dctail to run at startup by running:
+
+```
+sudo update-rc.d dctail defaults
+```
 
 
 Configuration
